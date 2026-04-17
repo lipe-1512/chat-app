@@ -40,3 +40,9 @@ Scenario: [EXPERIMENTAL] Validação de segurança por e-mail
     Given que o sistema detectou um acesso de um novo dispositivo
     When eu confirmo minha identidade através do link enviado por e-mail
     Then o sistema deve autorizar o novo dispositivo para uso
+
+Scenario: [FINAL] Validação de segurança por e-mail com expiração
+    Given que o sistema detectou um acesso de um novo dispositivo
+    When eu confirmo minha identidade através do link enviado por e-mail em até 10 minutos
+    Then o sistema deve autorizar o novo dispositivo
+    But o link deve expirar após esse período por questões de segurança
