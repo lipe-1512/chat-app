@@ -18,16 +18,16 @@ Feature: Notificações e Alertas
     And todas as mensagens de "João" ficam marcadas como lidas
     And o ícone do app na barra de tarefas para de piscar 
 
-  Scenario: Erro ao carregar notificações devido a falha de conexão
+  Scenario: Feedback de falha de conexão ao tentar atualizar notificações
     Given que o usuário "Ana" está na tela "Lista de Conversas"
     And o dispositivo está sem conexão com a internet
     When "Ana" tenta atualizar a lista de notificações
     Then o sistema exibe o banner de erro "Sem conexão. Verifique sua internet."
-    And o badge numérico não é atualizado
+    And o badge numérico permanece inalterado
 
   Scenario: Erro interno do servidor ao consultar badges
-    Given que o usuário "Ana" está autenticado no sistema
-    And o servidor de notificações está em estado de manutenção (indisponível)
+    Given que o usuário "Ana" está autenticada no sistema
+    And o servidor de notificações está em estado de manutenção
     When o serviço recebe a requisição GET /api/v1/notifications/badges
     Then o serviço retorna HTTP 503 Service Unavailable
     And o corpo da resposta contém a mensagem "Serviço temporariamente indisponível"
@@ -38,7 +38,7 @@ Feature: Notificações e Alertas
     When o usuário "João" envia uma mensagem urgente para "Ana"
     Then o sistema exibe o banner de notificação na tela de bloqueio
     And o dispositivo emite vibração curta
-  
+
   Scenario: Som de notificação customizado por contato
     Given que o usuário "Ana" configurou um som personalizado para "João"
     When "João" envia uma nova mensagem
