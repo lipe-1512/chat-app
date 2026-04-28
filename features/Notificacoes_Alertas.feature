@@ -40,6 +40,6 @@ Feature: Notificações e Alertas
     And o dispositivo emite vibração curta
 
   Scenario: Som de notificação customizado por contato
-    Given que o usuário "Ana" configurou um som personalizado para "João"
-    When "João" envia uma nova mensagem
+    Given que o usuário "Ana" configurou um som personalizado para "Filipe"
+    When "Filipe" envia uma nova mensagem
     Then o sistema reproduz o som customizado ao invés do som padrão
