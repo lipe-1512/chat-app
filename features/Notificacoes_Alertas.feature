@@ -29,7 +29,7 @@ Feature: Notificações e Alertas
   Scenario: Erro interno do servidor ao consultar badges
     Given que o usuário "Ana" está autenticada no sistema
     And o servidor de notificações está em estado de manutenção
-    When o serviço recebe a requisição GET /api/v1/notifications/badges
+    When o serviço recebe a requisição "GET /api/v1/notifications/badges"
     Then o serviço retorna HTTP 503 Service Unavailable
     And o corpo da resposta contém a mensagem "Serviço temporariamente indisponível"
 
