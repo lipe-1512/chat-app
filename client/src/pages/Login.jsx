@@ -17,11 +17,17 @@ export default function Login({ embedded = false }) {
   async function handleSubmit() {
     setCarregando(true)
     try {
-      const response = await login(form)
+      const response = await login(form) 
       const data = await response.json()
 
       if (response.ok) {
+        // Salva o token de autorização
         localStorage.setItem('token', data.access_token)
+        
+        // ESSENCIAL PARA O CHAT: Salva o email logado para o WebSocket se conectar
+        localStorage.setItem('usuario', form.email) 
+        
+        //  Redireciona para o chat
         navigate('/chat')
       } else {
         setErro(data.detail || 'Erro ao fazer login')

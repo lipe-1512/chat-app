@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import api from "../services/api";
 
 export default function Chat() {
     // Quem sou eu? (Pega o usuário salvo no localStorage durante o Login)
@@ -18,13 +17,19 @@ export default function Chat() {
     useEffect(() => {
         const buscarContatos = async () => {
             try {
-                // Faz a requisição para o seu FastAPI usando a configuração do api.js
-                const resposta = await api.get('/usuarios');
-                setContatos(resposta.data);
+                // Faz a requisição direta para a rota de usuários que criamos no FastAPI
+                const resposta = await fetch('http://127.0.0.1:8000/auth/usuarios');
+
+                if (resposta.ok) {
+                    const dados = await resposta.json();
+                    setContatos(dados);
+                } else {
+                    throw new Error("Rota não encontrada ou erro no servidor");
+                }
             } catch (error) {
                 console.error("Erro ao carregar os contatos reais:", error);
 
-                // Mock de teste (Plano B) para a tela não quebrar se a rota ainda não existir no backend
+                // Mock de teste (Plano B) 
                 setContatos([
                     { usuario: 'maria', nome: 'Maria Silva' },
                     { usuario: 'joao', nome: 'João Pedro' },
@@ -63,24 +68,21 @@ export default function Chat() {
     const enviarMensagem = () => {
         if (!mensagem.trim() || !contatoAtivo) return;
 
-        // O pacote JSON no formato exato para mensagens diretas
         const pacote = {
-            para: contatoAtivo.usuario,
+            para: contatoAtivo.usuario || contatoAtivo.email, // Ajustado para aceitar email se for o caso
             texto: mensagem
         };
 
-        // Envia o pacote convertido para texto pelo WebSocket
         ws.current.send(JSON.stringify(pacote));
-
-        // Adiciona a própria mensagem na tela imediatamente
         setHistorico((prev) => [...prev, `[Você]: ${mensagem}`]);
-        setMensagem(''); // Limpa o input
+        setMensagem('');
     };
-    // 7. A Interface da Tela
+
+    // A Interface da Tela
     return (
         <div style={{ display: 'flex', height: '100vh', fontFamily: 'sans-serif' }}>
 
-            {/* BARRA LATERAL (Sidebar) */}
+            {/* BARRA LATERAL */}
             <div style={{ width: '300px', borderRight: '1px solid #ccc', backgroundColor: '#f9f9f9', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ padding: '20px', borderBottom: '1px solid #ddd', backgroundColor: '#e2e2e2' }}>
                     <strong>Logado como:</strong> <br /> {usuarioLogado}
@@ -100,23 +102,21 @@ export default function Chat() {
                                 transition: 'background-color 0.2s'
                             }}
                         >
-                            <strong>{contato.nome || contato.usuario}</strong> <br />
-                            <small style={{ color: '#666' }}>@{contato.usuario}</small>
+                            <strong>{contato.nome || contato.usuario || contato.email}</strong> <br />
+                            <small style={{ color: '#666' }}>@{contato.usuario || contato.email}</small>
                         </li>
                     ))}
                 </ul>
             </div>
 
-            {/* ÁREA PRINCIPAL DO CHAT */}
+            {/* ÁREA DE MENSAGENS */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 {contatoAtivo ? (
                     <>
-                        {/* Cabeçalho com o nome do contato */}
                         <div style={{ padding: '20px', borderBottom: '1px solid #ccc', backgroundColor: '#fff' }}>
-                            <h2>Conversando com: {contatoAtivo.nome || contatoAtivo.usuario}</h2>
+                            <h2>Conversando com: {contatoAtivo.nome || contatoAtivo.usuario || contatoAtivo.email}</h2>
                         </div>
 
-                        {/* Caixa de Mensagens */}
                         <div style={{ flex: 1, padding: '20px', overflowY: 'auto', backgroundColor: '#ece5dd' }}>
                             {historico.map((msg, index) => (
                                 <div key={index} style={{ marginBottom: '10px', textAlign: msg.startsWith('[Você]') ? 'right' : 'left' }}>
@@ -134,7 +134,6 @@ export default function Chat() {
                             <div ref={fimDoChatRef} />
                         </div>
 
-                        {/* Input de Digitação e Botão de Envio */}
                         <div style={{ padding: '20px', backgroundColor: '#f0f0f0', display: 'flex' }}>
                             <input
                                 type="text"
@@ -153,7 +152,6 @@ export default function Chat() {
                         </div>
                     </>
                 ) : (
-                    /* Tela de Espera quando não há contato selecionado */
                     <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f4f4f4' }}>
                         <h2 style={{ color: '#888' }}>Clique em um contato na barra lateral para iniciar</h2>
                     </div>
