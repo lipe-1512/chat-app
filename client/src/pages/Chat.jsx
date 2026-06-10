@@ -88,7 +88,7 @@ export default function Chat() {
                 const destinatario = contatoAtivo.usuario || contatoAtivo.email;
                 if (!destinatario) return; 
 
-                const resposta = await fetch(`${API_URL}0/mensagens/${usuarioLogado}/${destinatario}`);
+                const resposta = await fetch(`${API_URL}/mensagens/${usuarioLogado}/${destinatario}`);
 
                 if (resposta.ok) {
                     const mensagensAntigas = await resposta.json();

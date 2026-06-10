@@ -35,13 +35,9 @@ export default function Login({ embedded = false }) {
             const meData = await meResponse.json()
             // Salva o nome_usuario real que veio do banco de dados!
             localStorage.setItem('usuario', meData.nome_usuario || meData.usuario)
-          } else {
-            // Se falhar, usa a primeira parte do email como plano B
-            localStorage.setItem('usuario', form.email.split('@')[0])
           }
         } catch (error) {
           console.error("Erro ao buscar dados do usuário", error)
-          localStorage.setItem('usuario', form.email.split('@')[0])
         }
         navigate('/chat')
       }
