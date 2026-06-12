@@ -16,6 +16,7 @@ export default function Chat() {
     const [mensagem, setMensagem] = useState('');           
     const [historico, setHistorico] = useState([]);         
     const [perfilAberto, setPerfilAberto] = useState(false);
+    const [isOnline, setIsOnline] = useState(navigator.onLine);
 
     const ws = useRef(null);
     const fimDoChatRef = useRef(null);
@@ -110,10 +111,59 @@ export default function Chat() {
         carregarHistorico();
     }, [contatoAtivo, usuarioLogado]);
 
+    // Efeito para monitorar a internet e despachar mensagens presas
+    useEffect(() => {
+        const handleOffline = () => setIsOnline(false);
+        const handleOnline = () => {
+            setIsOnline(true);
+            
+            // Assim que a internet volta, despacha tudo o que estava preso
+            setHistorico((prevHistorico) => {
+                const pendentes = prevHistorico.filter(m => m.status === 'Aguardando conexão');
+                
+                pendentes.forEach(msg => {
+                    const pacote = {
+                        para: contatoAtivo?.usuario || contatoAtivo?.email,
+                        texto: msg.texto
+                    };
+                    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+                        ws.current.send(JSON.stringify(pacote));
+                    }
+                });
+
+                // Atualiza o visual para "Enviada"
+                return prevHistorico.map(m => 
+                    m.status === 'Aguardando conexão' ? { ...m, status: 'Enviada' } : m
+                );
+            });
+        };
+
+        window.addEventListener('offline', handleOffline);
+        window.addEventListener('online', handleOnline);
+
+        return () => {
+            window.removeEventListener('offline', handleOffline);
+            window.removeEventListener('online', handleOnline);
+        };
+    }, [contatoAtivo]);
+
     // Função para Enviar a Mensagem
     const enviarMensagem = () => {
         if (!mensagem.trim() || !contatoAtivo) return;
 
+        // Lógica Offline
+        if (!isOnline) {
+            setHistorico((prev) => [...prev, {
+                id_mensagem: `offline-${Date.now()}`,
+                texto: mensagem,
+                remetente: usuarioLogado,
+                status: 'Aguardando conexão'
+            }]);
+            setMensagem('');
+            return; 
+        }
+
+        // Lógica online
         const pacote = {
             para: contatoAtivo.usuario || contatoAtivo.email,
             texto: mensagem
