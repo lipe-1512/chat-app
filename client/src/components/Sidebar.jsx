@@ -5,10 +5,17 @@ export function Sidebar({
     contatos, 
     contatoAtivo, 
     onSelectContato, 
-    onOpenPerfil 
+    onOpenPerfil,
+    isMobile
 }) {
     return (
-        <div style={{ width: '300px', borderRight: '1px solid #ccc', backgroundColor: '#f9f9f9', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ 
+            width: isMobile ? '100%' : '300px', // Largura dinâmica
+            borderRight: isMobile ? 'none' : '1px solid #ccc', // Remove a borda no celular
+            backgroundColor: '#f9f9f9', 
+            display: 'flex', 
+            flexDirection: 'column' 
+        }}>
             
             {/* CABEÇALHO DA SIDEBAR: Info do Usuário e Botão de Configurações */}
             <div style={{ padding: '20px', borderBottom: '1px solid #ddd', backgroundColor: '#e2e2e2' }}>
@@ -17,7 +24,7 @@ export function Sidebar({
 
                 <button
                     data-cy="btn-configuracoes"
-                    onClick={onOpenPerfil} // ⬅️ Avisa o Chat.jsx que o botão foi clicado
+                    onClick={onOpenPerfil} // Avisa o Chat.jsx que o botão foi clicado
                     style={{
                         marginTop: '12px',
                         width: '100%',
