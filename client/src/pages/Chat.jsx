@@ -7,14 +7,13 @@ import { ChatInput } from '../components/ChatInput';
 import { useContatos } from '../hooks/useContatos';
 import { useChatMotor } from '../hooks/useChatMotor';
 import { useMobile } from '../hooks/useMobile';
-import { useNotificacoes } from '../hooks/useNotificacoes';
-import BannerNotificacao from '../components/BannerNotificacao';
+import { useNotificacoes } from '../hooks/useNotificacoes';  // ← NOVO
+import BannerNotificacao from '../components/BannerNotificacao';  // ← NOVO
 
 export default function Chat() {
   const [usuarioLogado] = useState(localStorage.getItem('usuario') || 'usuario_teste');
   const [contatoAtivo, setContatoAtivo] = useState(null);
   const [perfilAberto, setPerfilAberto] = useState(false);
-
   const contatos = useContatos();
   const {
     historico,
@@ -99,8 +98,8 @@ export default function Chat() {
             contatos={contatos}
             contatoAtivo={contatoAtivo}
             presencas={presencas}
-            badges={badges}
-            onSelectContato={handleSelecionarContato}
+            badges={badges}  // ← NOVO
+            onSelectContato={handleSelecionarContato}  // ← MODIFICADO
             onOpenPerfil={() => setPerfilAberto(true)}
             isMobile={isMobile}
           />

@@ -11,7 +11,7 @@ export function Sidebar({
   contatos,
   contatoAtivo,
   presencas = {},
-  badges = {},
+  badges = {},  // ← NOVO
   onSelectContato,
   onOpenPerfil,
   isMobile
@@ -51,7 +51,7 @@ export function Sidebar({
           const idContato = contato.usuario || contato.email;
           const presenca = presencas[idContato];
           const ativo = contatoAtivo?.usuario === contato.usuario;
-          const badgeQuantidade = badges[idContato] || 0;
+          const badgeQuantidade = badges[idContato] || 0;  // ← NOVO
           return (
             <li
               key={idContato || index}
@@ -80,7 +80,7 @@ export function Sidebar({
                     {textoPresenca(presenca)}
                   </small>
                 </div>
-                <BadgeNotificacao quantidade={badgeQuantidade} />
+                <BadgeNotificacao quantidade={badgeQuantidade} />  {/* ← NOVO */}
               </div>
             </li>
           );
