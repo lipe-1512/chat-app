@@ -37,6 +37,6 @@ def consultar_badges(
     except Exception as e:
         print(f"Erro ao consultar badges: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Erro ao consultar notificacoes"
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Serviço temporariamente indisponível"
         )
